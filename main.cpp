@@ -120,7 +120,7 @@ Hex( // TeX §64 and §67
             progress(c);
         }
     };
-    
+
     char buf[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char k = 0;
     do { buf[k] = n % 16; n = n/16; k++; } while (n != 0);
@@ -129,7 +129,7 @@ Hex( // TeX §64 and §67
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-// The Microchip PIC32 mapping  
+// The Microchip PIC32 mapping
 Elf32_Addr virtualToPhysical(Elf32_Addr vAddr) { return vAddr & 0x1FFFFFFF; }
 
 int
@@ -198,7 +198,7 @@ main(
             uint64_t bytesInLine = MIN(bytesLeft, 16);
             checksum = bytesInLine;
             Hex(bytesInLine, 2, ^(char s) { fprintf(out, "%c", s); } );
-            uint64_t offset = sectionHeader.sh_size - bytesLeft;
+            uint64_t offset = sectionHeader.sh_size - bytesLeft; // TODO: Add support for >64 kB sections.
             uint16_t address = 0xFFFF&(sectionHeader.sh_addr + offset);
             Hex(address, 4, ^(char s) { fprintf(out, "%c", s); } );
             checksum += 0xff&address;
@@ -215,8 +215,9 @@ main(
             if (bytesLeft > 0) goto again;
         }
     }
-    
-    fprintf(out, ":00000001FF\x0d\x0a");
+
+    fprintf(out, ":00000001FF\x0d\x0a"); // End of file
     fclose(out); fclose(in);
     return 0;
 }
+

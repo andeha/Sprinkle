@@ -1,5 +1,5 @@
 //
-//  main.cpp
+//  main.cpp (Compile with clang -o llvm2pic32 -std=c++1z main.cpp)
 //  llvm2pic32
 //
 
@@ -120,7 +120,7 @@ Hex( // TeX §64 and §67
             progress(c);
         }
     };
-
+    
     char buf[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char k = 0;
     do { buf[k] = n % 16; n = n/16; k++; } while (n != 0);
@@ -173,7 +173,7 @@ main(
         fread(&sectionHeader, sizeof(Elf32_Shdr), 1, in);
         const char *name = stringTable + sectionHeader.sh_name;
         if (sectionHeader.sh_size != 0 &&
-            (strcmp(name, ".text") == 0 || strcmp(name, ".data") == 0 || strcmp(name, ".bss") == 0)) {
+            (strcmp(name, ".text") == 0 || strcmp(name, ".data") == 0 || strcmp(name, ".bss") == 0 || strcmp(name, ".conf") == 0)) {
             fprintf(stderr, "%d\t%s\t%x\t%x\t%x\t%x\n", i, name, sectionHeader.sh_offset,
                    sectionHeader.sh_size, sectionHeader.sh_addr, sectionHeader.sh_type);
             fseek(in, sectionHeader.sh_offset, SEEK_SET);
@@ -215,9 +215,8 @@ main(
             if (bytesLeft > 0) goto again;
         }
     }
-
+    
     fprintf(out, ":00000001FF\x0d\x0a"); // End of file
     fclose(out); fclose(in);
     return 0;
 }
-
